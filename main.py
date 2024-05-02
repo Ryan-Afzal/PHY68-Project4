@@ -103,18 +103,18 @@ class RyanNHusamCachingAlgo:
         """
 
         r = np.sqrt(x**2 + y**2)
-        #θ = np.arctan2(x, y)
-        θ = np.arctan(y / x)
+        θ = np.arctan2(x, y)
+        # θ = np.arctan(y / x)
 
-        if (x < 0):
-            if (y < 0):# x < 0, y < 0
-                θ += np.pi
-            else:# x < 0, y >= 0
-                θ = np.pi / 2 - θ
-        elif (y < 0):# x >= 0, y < 0
-            θ += 2*np.pi
-        else:# x >= 0, y >= 0
-            pass
+        # if (x < 0):
+        #     if (y < 0):# x < 0, y < 0
+        #         θ += np.pi
+        #     else:# x < 0, y >= 0
+        #         θ = np.pi / 2 - θ
+        # elif (y < 0):# x >= 0, y < 0
+        #     θ += 2*np.pi
+        # else:# x >= 0, y >= 0
+        #     pass
 
         return r, θ
 
@@ -158,12 +158,12 @@ class RyanNHusamCachingAlgo:
         plt.show()
 
 def main():
-    plottingSystem = RyanNHusamCachingAlgo.get_instance("data/45 degrees mass A.csv")
+    plottingSystem = RyanNHusamCachingAlgo.get_instance("data/45 degrees.csv")
     # print(plottingSystem.data)
     # plottingSystem.phaseAnglePlot()
-    # plottingSystem.timeAnglePlot("data/45 degrees mass A.csv")
-    # plottingSystem.timeSeriesPlot()
-    # plottingSystem.phaseSpacePlot()
+    # plottingSystem.timeAnglePlot("data/45 degrees.csv")
+    plottingSystem.timeSeriesPlot()
+    plottingSystem.phaseSpacePlot()
     plottingSystem.angularPositionPlot()
 
 
