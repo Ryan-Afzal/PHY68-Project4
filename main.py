@@ -108,10 +108,9 @@ class RyanNHusamCachingAlgo:
 
         if (x < 0):
             if (y < 0):# x < 0, y < 0
-                θ += (3*np.pi / 2)
-                print(θ)
+                θ += np.pi
             else:# x < 0, y >= 0
-                θ += np.pi / 2
+                θ = np.pi / 2 - θ
         elif (y < 0):# x >= 0, y < 0
             θ += 2*np.pi
         else:# x >= 0, y >= 0
