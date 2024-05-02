@@ -1,4 +1,6 @@
 import math
+import numpy as np
+import scipy.optimize as sci
 
 L_wire = 157E-3
 
@@ -24,3 +26,20 @@ m_rod = L_rod * math.pi * (D_rod/2)**2#m = pV = p*L*pi*R^2
 I_ROD = 1/2 * m_rod * L_rod**2
 I_M = m_M*h_M*(l_M**2 + w_M**2)/12 + m_M*(d**2)
 I = I_ROD + 2*I_M
+
+def dampedOscillation(t, A, alpha, omega, phi):
+    return A * np.exp(-alpha*t) * np.sin(omega * t + phi)
+
+def getParams(t, theta):
+	"""
+    Fits the provided angle-time curve to an underdamped angular spring.
+	t - list of time values
+    theta - list of angle values
+    returns: list-type consisting of params
+		0 - A (maximum magnitude)
+        1 - alpha (damping constant)
+        2 - omega (natural frequency)
+        3 - phi (phase angle)
+    """
+	p, cov = sci.curve_fit(dampedOscillation, t, theta)
+	return p

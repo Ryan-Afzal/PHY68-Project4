@@ -9,12 +9,13 @@ class RyanNHusamCachingAlgo:
     _singletons = {}
     csvCache = dict()      # key is a hash of the csv (to save space) and value is a pointer to distance array
     distanceCache = set() # key is a hash of the csv (to save space) and value is a pointer to the distance array
-
+    csvPath = ""
     @classmethod
     def get_instance(cls, file_path):
         hash = hashing.hash_file(file_path)
         if hash not in cls._singletons:
             cls._singletons[hash] = cls()
+        cls._singletons[hash].csvPath  = file_path
         return cls._singletons[hash]
 
 
@@ -55,7 +56,7 @@ class RyanNHusamCachingAlgo:
         return np.array(t), np.array(x), np.array(y)
 
 
-    def timeSeriesPlot(self,csv):
+    def timeSeriesPlot(self):
         """""
         Time Series Plot: plots distance over time in metric units
         csv: with 3 columns
@@ -63,10 +64,9 @@ class RyanNHusamCachingAlgo:
             x - position in x-coordinate m
             y - position in y-coordinate
         """
+        csv = self.csvPath
         t,x,y = self.getDataFromFile(csv)
-        # polarPoints = [polar(i,j) for i, j in zip(x, y)]
         distance_arr = [self.distance_from_origin(i,j) for i, j in zip(x, y)]
-        print(distance_arr)
         plt.plot(t,distance_arr)
         plt.ylabel('Position')
         plt.xlabel('time')
@@ -74,7 +74,7 @@ class RyanNHusamCachingAlgo:
         plt.show()
 
 
-    def phaseSpacePlot(self,csv):
+    def phaseSpacePlot(self):
         """""
         Phase Space Plot: plots velocity over time in metric units
         csv: with 3 columns
@@ -82,12 +82,13 @@ class RyanNHusamCachingAlgo:
             x - position in x-coordinate m
             y - position in y-coordinate
         """
+        csv = self.csvPath
         t,x,y = self.getDataFromFile(csv)
         distance_arr = [self.distance_from_origin(i,j) for i, j in zip(x, y)]
         velocity_arr = [distance_arr[i]/t[i] for i in range(len(distance_arr))]
         plt.plot(t,velocity_arr)
-        plt.xlabel('time')
-        plt.ylabel('velocity')
+        plt.xlabel('time ')
+        plt.ylabel('velocity (m/s)')
         plt.grid(True)
         plt.show()
 
@@ -100,12 +101,28 @@ class RyanNHusamCachingAlgo:
 
         ex: r, θ = polar(x, y)
         """
-        return (np.sqrt(x**2 + y**2)), (np.arctan2(y/x))
+
+        r = np.sqrt(x**2 + y**2)
+        #θ = np.arctan2(x, y)
+        θ = np.arctan(y / x)
+
+        if (x < 0):
+            if (y < 0):# x < 0, y < 0
+                θ += (3*np.pi / 2)
+                print(θ)
+            else:# x < 0, y >= 0
+                θ += np.pi / 2
+        elif (y < 0):# x >= 0, y < 0
+            θ += 2*np.pi
+        else:# x >= 0, y >= 0
+            pass
+
+        return r, θ
 
     def distance_from_origin(self,i, j):
         return math.sqrt(i**2 + j**2)
 
-    def phaseAnglePlot(self,csv):
+    def phaseAnglePlot(self):
         """""
         Phase Angle Plot: plots angle over time in metric units
         csv: with 3 columns
@@ -113,23 +130,42 @@ class RyanNHusamCachingAlgo:
             x - position in x-coordinate m
             y - position in y-coordinate
         """
+        csv = self.csvPath
         t,x,y = self.getDataFromFile(csv)
         polarPoints = [self.polar(i,j) for i, j in zip(x, y)]
         angle_arr = [polarPoints[i][1] for i in range(len(polarPoints))]
         plt.plot(t,angle_arr)
-        plt.xlabel('time')
-        plt.ylabel('angle')
+        plt.xlabel('time (s)')
+        plt.ylabel('angle (rad)')
         plt.grid(True)
         plt.show()
 
-
+    # polar distance overtime
+    def angularPositionPlot(self):
+        """""
+        Time Series Plot: plots distance over time in metric units
+        csv: with 3 columns
+            t - time in seconds
+            x - position in x-coordinate m
+            y - position in y-coordinate
+        """
+        csv = self.csvPath
+        t,x,y = self.getDataFromFile(csv)
+        polarPoints = [self.polar(i,j)[1] for i, j in zip(x, y)]
+        plt.plot(t, polarPoints)
+        plt.ylabel('Angle (rad)')
+        plt.xlabel('time (s)')
+        plt.grid(True)
+        plt.show()
 
 def main():
     plottingSystem = RyanNHusamCachingAlgo.get_instance("data/45 degrees mass A.csv")
     # print(plottingSystem.data)
-    # phaseAnglePlot("data/45 degrees mass A.csv")
-    plottingSystem.timeSeriesPlot("data/45 degrees mass A.csv")
-    plottingSystem.phaseSpacePlot("data/45 degrees mass A.csv")
+    # plottingSystem.phaseAnglePlot()
+    # plottingSystem.timeAnglePlot("data/45 degrees mass A.csv")
+    # plottingSystem.timeSeriesPlot()
+    # plottingSystem.phaseSpacePlot()
+    plottingSystem.angularPositionPlot()
 
 
 main()
