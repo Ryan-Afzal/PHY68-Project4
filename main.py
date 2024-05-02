@@ -13,7 +13,7 @@ class RyanNHusamCachingAlgo:
     @classmethod
     def get_instance(cls, file_path):
         hash = hashing.hash_file(file_path)
-        if cls not in cls._singletons:
+        if hash not in cls._singletons:
             cls._singletons[hash] = cls()
         return cls._singletons[hash]
 
@@ -130,5 +130,6 @@ def main():
     # phaseAnglePlot("data/45 degrees mass A.csv")
     plottingSystem.timeSeriesPlot("data/45 degrees mass A.csv")
     plottingSystem.phaseSpacePlot("data/45 degrees mass A.csv")
+
 
 main()
