@@ -3,7 +3,7 @@ import csv
 import math
 import matplotlib.pyplot as plt
 import hashing
-
+import params
 
 class RyanNHusamCachingAlgo:
     _singletons = {}
@@ -151,10 +151,21 @@ class RyanNHusamCachingAlgo:
         csv = self.csvPath
         t,x,y = self.getDataFromFile(csv)
         polarPoints = [self.polar(i,j)[1] for i, j in zip(x, y)]
-        plt.plot(t, polarPoints)
+        plt.plot(t, polarPoints, label='Data')
+
+        p = params.getParams(t, polarPoints)
+        plt.plot(t, params.dampedOscillation(t, *p), label='Curve Fit')
+        # print(p)
+        # print(f'α = {p[1]}')
+        print(f'ω = {p[2]}')
+        # print(f'ϴ = {p[4]}')
+
+        print(f'κ = I(ω2 + α2) = {np.square(p[2]) * params.I}')
+
         plt.ylabel('Angle (rad)')
-        plt.xlabel('time (s)')
+        plt.xlabel('Time (s)')
         plt.grid(True)
+        plt.legend()
         plt.show()
 
 def main():
@@ -162,8 +173,8 @@ def main():
     # print(plottingSystem.data)
     # plottingSystem.phaseAnglePlot()
     # plottingSystem.timeAnglePlot("data/45 degrees.csv")
-    plottingSystem.timeSeriesPlot()
-    plottingSystem.phaseSpacePlot()
+    # plottingSystem.timeSeriesPlot()
+    # plottingSystem.phaseSpacePlot()
     plottingSystem.angularPositionPlot()
 
 
