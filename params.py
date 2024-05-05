@@ -48,4 +48,5 @@ def getParams(t, theta):
             theta0 (equilibrium position)
     """
 	p, _ = sci.curve_fit(dampedOscillation, t, theta, p0=[2, 0.001, 0.01, -np.pi/2, -1])
-	return p
+	model = dampedOscillation(t, *p)
+	return p, model

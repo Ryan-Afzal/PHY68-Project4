@@ -18,8 +18,6 @@ class RyanNHusamCachingAlgo:
         cls._singletons[hash].csvPath  = file_path
         return cls._singletons[hash]
 
-
-
     def getDataFromFile(self,filename):
         """
         Reads in a file and converts it into data
@@ -153,7 +151,7 @@ class RyanNHusamCachingAlgo:
         polarPoints = [self.polar(i,j)[1] for i, j in zip(x, y)]
         plt.plot(t, polarPoints, label='Data')
 
-        p = params.getParams(t, polarPoints)
+        p, model = params.getParams(t, polarPoints)
         plt.plot(t, params.dampedOscillation(t, *p), label='Curve Fit')
         # print(p)
         # print(f'α = {p[1]}')
@@ -162,20 +160,37 @@ class RyanNHusamCachingAlgo:
 
         print(f'κ = I(ω2 + α2) = {np.square(p[2]) * params.I}')
 
+        # print("Polarpoints: ")
+        # print(polarPoints)
+        # print("Model: ")
+        # print(p)
+
         plt.ylabel('Angle (rad)')
         plt.xlabel('Time (s)')
         plt.grid(True)
         plt.legend()
         plt.show()
+        return polarPoints, p, model
+    
+    def plotError(self, polarPoints, model):
+        t,x,y = self.getDataFromFile(self.csvPath)
+        error = polarPoints - model
+        plt.plot(t, error, label='Error')
+        plt.ylabel('Error (rad)')
+        plt.xlabel('Time (s)')
+        plt.grid(True)
+        plt.legend()
+        plt.show()
+        
 
 def main():
     plottingSystem = RyanNHusamCachingAlgo.get_instance("data/45 degrees.csv")
     # print(plottingSystem.data)
     # plottingSystem.phaseAnglePlot()
-    # plottingSystem.timeAnglePlot("data/45 degrees.csv")
+    # plottingSystem.timeAnglePlot("data/90 degrees.csv")
     # plottingSystem.timeSeriesPlot()
     # plottingSystem.phaseSpacePlot()
-    plottingSystem.angularPositionPlot()
-
+    polarPoints, p, model = plottingSystem.angularPositionPlot()
+    plottingSystem.plotError(polarPoints, model)
 
 main()
