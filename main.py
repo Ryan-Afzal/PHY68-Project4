@@ -66,6 +66,7 @@ class RyanNHusamCachingAlgo:
         t,x,y = self.getDataFromFile(csv)
         distance_arr = [self.distance_from_origin(i,j) for i, j in zip(x, y)]
         plt.plot(t,distance_arr)
+        plt.title(self.csvPath)
         plt.ylabel('Position')
         plt.xlabel('time')
         plt.grid(True)
@@ -85,6 +86,7 @@ class RyanNHusamCachingAlgo:
         distance_arr = [self.distance_from_origin(i,j) for i, j in zip(x, y)]
         velocity_arr = [distance_arr[i]/t[i] for i in range(len(distance_arr))]
         plt.plot(t,velocity_arr)
+        plt.title(self.csvPath)
         plt.xlabel('time ')
         plt.ylabel('velocity (m/s)')
         plt.grid(True)
@@ -102,17 +104,6 @@ class RyanNHusamCachingAlgo:
 
         r = np.sqrt(x**2 + y**2)
         θ = np.arctan2(x, y)
-        # θ = np.arctan(y / x)
-
-        # if (x < 0):
-        #     if (y < 0):# x < 0, y < 0
-        #         θ += np.pi
-        #     else:# x < 0, y >= 0
-        #         θ = np.pi / 2 - θ
-        # elif (y < 0):# x >= 0, y < 0
-        #     θ += 2*np.pi
-        # else:# x >= 0, y >= 0
-        #     pass
 
         return r, θ
 
@@ -132,6 +123,7 @@ class RyanNHusamCachingAlgo:
         polarPoints = [self.polar(i,j) for i, j in zip(x, y)]
         angle_arr = [polarPoints[i][1] for i in range(len(polarPoints))]
         plt.plot(t,angle_arr)
+        plt.title(self.csvPath)
         plt.xlabel('time (s)')
         plt.ylabel('angle (rad)')
         plt.grid(True)
@@ -153,44 +145,39 @@ class RyanNHusamCachingAlgo:
 
         p, model = params.getParams(t, polarPoints)
         plt.plot(t, params.dampedOscillation(t, *p), label='Curve Fit')
-        # print(p)
-        # print(f'α = {p[1]}')
         print(f'ω = {p[2]}')
-        # print(f'ϴ = {p[4]}')
 
-        print(f'κ = I(ω2 + α2) = {np.square(p[2]) * params.I}')
+        print(f'κ = I(ω2 + α2) = {params.I * (np.square(p[2]) + np.square(p[1]) )}')
 
-        # print("Polarpoints: ")
-        # print(polarPoints)
-        # print("Model: ")
-        # print(p)
-
+        plt.title(self.csvPath)
         plt.ylabel('Angle (rad)')
         plt.xlabel('Time (s)')
         plt.grid(True)
         plt.legend()
         plt.show()
         return polarPoints, p, model
-    
+
     def plotError(self, polarPoints, model):
         t,x,y = self.getDataFromFile(self.csvPath)
         error = polarPoints - model
         plt.plot(t, error, label='Error')
+        plt.title(self.csvPath)
         plt.ylabel('Error (rad)')
         plt.xlabel('Time (s)')
         plt.grid(True)
         plt.legend()
         plt.show()
-        
+
 
 def main():
-    plottingSystem = RyanNHusamCachingAlgo.get_instance("data/45 degrees.csv")
-    # print(plottingSystem.data)
-    # plottingSystem.phaseAnglePlot()
-    # plottingSystem.timeAnglePlot("data/90 degrees.csv")
-    # plottingSystem.timeSeriesPlot()
-    # plottingSystem.phaseSpacePlot()
-    polarPoints, p, model = plottingSystem.angularPositionPlot()
-    plottingSystem.plotError(polarPoints, model)
+    files = ["data/45 degrees.csv", "data/90 degrees.csv", "data/135 degrees.csv"]
+    for i, file in enumerate(files):
+        print(file)
+        plottingSystem = RyanNHusamCachingAlgo.get_instance(file)
+        polarPoints, p, model = plottingSystem.angularPositionPlot()
+        plottingSystem.plotError(polarPoints, model)
+        if i != len(files) -1:
+            print()
 
-main()
+if __name__ == "__main__":
+    main()
