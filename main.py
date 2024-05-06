@@ -7,8 +7,8 @@ import params
 
 class RyanNHusamCachingAlgo:
     _singletons = {}
-    csvCache = dict()      # key is a hash of the csv (to save space) and value is a pointer to distance array
-    distanceCache = set() # key is a hash of the csv (to save space) and value is a pointer to the distance array
+    _csvCache = None      # key is a hash of the csv (to save space) and value is a pointer to distance array
+    _distanceCache = None # key is a hash of the csv (to save space) and value is a pointer to the distance array
     csvPath = ""
     @classmethod
     def get_instance(cls, file_path):
@@ -16,6 +16,8 @@ class RyanNHusamCachingAlgo:
         if hash not in cls._singletons:
             cls._singletons[hash] = cls()
         cls._singletons[hash].csvPath  = file_path
+        cls._singletons[hash]._csvCache = dict()
+        cls._singletons[hash]._distanceCache = set()
         return cls._singletons[hash]
 
     def getDataFromFile(self,filename):
@@ -25,8 +27,8 @@ class RyanNHusamCachingAlgo:
 
         ex: t, x, y = getDataFromFile("data.csv")
         """
-        if 'time' in self.csvCache  and 'x' in self.csvCache and 'y' in self.csvCache:
-            return self.csvCache['time'], self.csvCache['x'], self.csvCache['y']
+        if 'time' in self._csvCache  and 'x' in self._csvCache and 'y' in self._csvCache:
+            return self._csvCache['time'], self._csvCache['x'], self._csvCache['y']
         rows = []
         with open(filename, 'r', newline='') as csvfile:
             filereader = csv.reader(csvfile, dialect=csv.QUOTE_NONNUMERIC, delimiter='\n')
@@ -48,9 +50,9 @@ class RyanNHusamCachingAlgo:
             x.append(float(r[1]))
             y.append(float(r[2]))
             i += 1
-        self.csvCache['time'] = np.array(t)
-        self.csvCache['x'] = np.array(x)
-        self.csvCache['y'] = np.array(y)
+        self._csvCache['time'] = np.array(t)
+        self._csvCache['x'] = np.array(x)
+        self._csvCache['y'] = np.array(y)
         return np.array(t), np.array(x), np.array(y)
 
 
@@ -140,10 +142,10 @@ class RyanNHusamCachingAlgo:
         """
         csv = self.csvPath
         t,x,y = self.getDataFromFile(csv)
-        polarPoints = [self.polar(i,j)[1] for i, j in zip(x, y)]
-        plt.plot(t, polarPoints, label='Data')
+        angles = [self.polar(i,j)[1] for i, j in zip(x, y)]
+        plt.plot(t, angles, label='Data')
 
-        p, model = params.getParams(t, polarPoints)
+        p, model = params.getParams(t, angles)
         plt.plot(t, params.dampedOscillation(t, *p), label='Curve Fit')
         print(f'ω = {p[2]}')
 
@@ -155,7 +157,7 @@ class RyanNHusamCachingAlgo:
         plt.grid(True)
         plt.legend()
         plt.show()
-        return polarPoints, p, model
+        return angles, p, model
 
     def plotError(self, polarPoints, model):
         t,x,y = self.getDataFromFile(self.csvPath)

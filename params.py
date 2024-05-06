@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import scipy.optimize as sci
+import hashlib
 
 L_wire = 157E-3
 
@@ -31,12 +32,12 @@ def dampedOscillation(t, A, alpha, omega, phi, theta0):
     return A * np.exp(-alpha*t) * np.sin(omega * t + phi) + theta0
 
 def getParams(t, theta):
-	"""
+    """
     Fits the provided angle-time curve to an underdamped angular spring.
-	t - list of time values
+    t - list of time values
     theta - list of angle values
     returns: list-type consisting of params
-	    0:
+        0:
             A (maximum magnitude)
         1:
             alpha (damping constant)
@@ -47,6 +48,7 @@ def getParams(t, theta):
         4:
             theta0 (equilibrium position)
     """
-	p, _ = sci.curve_fit(dampedOscillation, t, theta, p0=[2, 0.001, 0.01, -np.pi/2, -1])
-	model = dampedOscillation(t, *p)
-	return p, model
+    p, _ = sci.curve_fit(dampedOscillation, t, theta, p0=[2, 0.001, 0.01, -np.pi/2, -1])
+    model = dampedOscillation(t, *p)
+
+    return p, model
