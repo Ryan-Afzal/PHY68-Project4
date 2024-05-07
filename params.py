@@ -1,3 +1,6 @@
+## params.py - Husam Adam, Ryan Afzal, Labib Afia
+## This file creates our model and defines all of our parameters.
+
 import math
 import numpy as np
 import scipy.optimize as sci

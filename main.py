@@ -1,3 +1,7 @@
+## main.py - Husam Adam, Ryan Afzal, Labib Afia
+## This file gets our data from the csv files. This also plots our data, model,
+## and error.
+
 import numpy as np
 import csv
 import math
@@ -134,7 +138,7 @@ class RyanNHusamCachingAlgo:
     # polar distance overtime
     def angularPositionPlot(self):
         """""
-        Time Series Plot: plots distance over time in metric units
+        Time Series Plot: plots angle over time in metric units
         csv: with 3 columns
             t - time in seconds
             x - position in x-coordinate m
@@ -160,6 +164,10 @@ class RyanNHusamCachingAlgo:
         return angles, p, model
 
     def plotError(self, polarPoints, model):
+        """""
+        plotError: plots error over time
+        Takes the data, subtracts the models values, and plots it.
+        """
         t,x,y = self.getDataFromFile(self.csvPath)
         error = polarPoints - model
         plt.plot(t, error, label='Error')

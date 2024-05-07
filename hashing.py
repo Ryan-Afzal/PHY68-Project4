@@ -1,3 +1,6 @@
+## hashing.py - Husam Adam, Ryan Afzal, Labib Afia
+## This file is meant to creates and returns a file's hash.
+
 import hashlib
 
 def hash_file(file_path, chunk_size=4096):
